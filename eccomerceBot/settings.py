@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'eccomerceBot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dc8u2jtice0egf',
+        'USER': 'ohvnqbspzwkkrz',
+        'PASSWORD': '32a87961152a04c2399a9aa7c170af6f2403a8a22a5bdae04d41dfdf3763aa5c',
+        'HOST': 'ec2-46-137-113-157.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
