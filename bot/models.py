@@ -1,14 +1,14 @@
 from django.db import models
 
 
-class TelegramUser(models.Manager):
+class TelegramUser(models.Model):
     full_name = models.CharField(max_length=100)
     datetime = models.DateTimeField(auto_now=True)
     state = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
 
 
-class TypeBook(models.Manager):
+class TypeBook(models.Model):
     name = models.CharField(max_length=100, null=True)
     hidden = models.BooleanField(default=False)
 
@@ -16,7 +16,7 @@ class TypeBook(models.Manager):
         return '{} - {}'.format(self.id, self.name)
 
 
-class File(models.Manager):
+class File(models.Model):
     name = models.CharField(max_length=100, null=False)
     file = models.BinaryField(null=False)
     type = models.BooleanField()
@@ -25,7 +25,7 @@ class File(models.Manager):
         return '{} - {}'.format(self.id, self.name)
 
 
-class Author(models.Manager):
+class Author(models.Model):
     full_name = models.CharField(max_length=100, null=True)
     hidden = models.BooleanField(default=False)
 
@@ -33,11 +33,11 @@ class Author(models.Manager):
         return '{} - {}'.format(self.id, self.full_name)
 
 
-class Book(models.Manager):
+class Book(models.Model):
     type_id = models.ForeignKey(TypeBook, on_delete=models.PROTECT)
     file_id = models.ForeignKey(File, on_delete=models.PROTECT)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
-    name = models.CharField(null=False)
+    name = models.CharField(max_length=255, null=False)
     year = models.DateField()
     description = models.TextField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -48,7 +48,7 @@ class Book(models.Manager):
         return '{} - {}'.format(self.id, self.name)
 
 
-class Basket(models.Manager):
+class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)
     telegram_user_id = models.ForeignKey(TelegramUser, on_delete=models.PROTECT)
     tolal_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -58,7 +58,7 @@ class Basket(models.Manager):
         return '{} - {}'.format(self.id, self.telegram_user_id)
 
 
-class ListBasket(models.Manager):
+class ListBasket(models.Model):
     basket_id = models.ForeignKey(Basket, on_delete=models.PROTECT)
     book_id = models.ForeignKey(Book, on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -67,7 +67,7 @@ class ListBasket(models.Manager):
         return '{}.{} - {}'.format(self.basket_id, self.id, self.book_id)
 
 
-class Like(models.Manager):
+class Like(models.Model):
     book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
     telegram_user_id = models.ForeignKey(TelegramUser, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now=True)
