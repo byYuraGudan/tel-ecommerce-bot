@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'k&sfk8#2*6r5qh225y2rqf(w7)d7a5s&p&vkka#*mb1f8i-mnk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_telegrambot',
     'bot'
 ]
 
@@ -124,8 +125,7 @@ STATIC_URL = '/static/'
 
 DJANGO_TELEGRAMBOT = {
 
-    'MODE': 'WEBHOOK', #(Optional [str]) # The default value is WEBHOOK,
-                        # otherwise you may use 'POLLING'
+    'MODE': 'WEBHOOK',
     'WEBHOOK_SITE': 'https://telegram-sales-bot.herokuapp.com/',
     'WEBHOOK_PREFIX': '/bot-webhooks',
 
