@@ -18,9 +18,9 @@ def init_handler(dispatcher, *handlers):
 
 def main():
     logger.info("Loading handlers for telegram bot")
-    persistence = PicklePersistence('persistence.pickle')
+    # persistence = PicklePersistence('persistence.pickle')
     dp = DjangoTelegramBot.dispatcher
-    dp.persistence = persistence
-    init_handler(dp, all_command_handlers, all_conversation_handlers, all_conversation_handlers)
+    # dp.persistence = persistence
+    init_handler(dp, all_command_handlers, all_conversation_handlers, all_message_handlers)
     dp.add_handler(unknown_message)
     dp.add_error_handler(error_handlers.error)
