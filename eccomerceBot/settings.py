@@ -131,7 +131,7 @@ DJANGO_TELEGRAMBOT = {
 
     'BOTS': [
         {
-           'TOKEN': '969138475:AAG15aQEhEMnEOVTlv3C-fWmOcPp-Qg7-n0',
+           'TOKEN': '1028010573:AAFV7pOnpgN-tr2y98Fl1rs1vVJ8aAJ5-ik',
         },
     ],
 }

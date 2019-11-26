@@ -7,7 +7,7 @@ DJANGO_TELEGRAMBOT = {
     'MODE': 'POLLING',
     'BOTS': [
         {
-           'TOKEN': '969138475:AAG15aQEhEMnEOVTlv3C-fWmOcPp-Qg7-n0',
+           'TOKEN': '1035084779:AAFvN5PlDBLlOaNNiILAjyUt7MiUHPWLKGk',
         },
     ],
 }
