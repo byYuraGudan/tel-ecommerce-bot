@@ -21,7 +21,7 @@ class TypeBook(models.Model):
 
 class File(models.Model):
     name = models.CharField(max_length=100, null=False)
-    file = models.FileField(null=False)
+    file = models.FileField(null=False, upload_to='files')
     type = models.CharField(max_length=15)
 
     def __str__(self):
@@ -38,14 +38,14 @@ class Author(models.Model):
 
 class Book(models.Model):
     type_id = models.ForeignKey(TypeBook, on_delete=models.PROTECT)
-    file_id = models.ForeignKey(File, on_delete=models.PROTECT, blank=False)
+    file_id = models.OneToOneField(File, on_delete=models.PROTECT, blank=False)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, null=False)
-    image = models.ImageField(null=True)
+    image = models.ImageField(null=True, upload_to='images')
     year = models.DateField()
     description = models.TextField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_active = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):

@@ -126,8 +126,11 @@ USE_TZ = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'eccomerceBot/static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'eccomerceBot/media')
+
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 
 DJANGO_TELEGRAMBOT = {
