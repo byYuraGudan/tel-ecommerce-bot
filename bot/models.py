@@ -21,8 +21,8 @@ class TypeBook(models.Model):
 
 class File(models.Model):
     name = models.CharField(max_length=100, null=False)
-    file = models.BinaryField(null=False)
-    type = models.BooleanField()
+    file = models.FileField(null=False)
+    type = models.CharField(max_length=15)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
