@@ -41,7 +41,7 @@ class Book(models.Model):
     file_id = models.ForeignKey(File, on_delete=models.PROTECT)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, null=False)
-    image = models.BinaryField(null=True)
+    image = models.ImageField(null=True)
     year = models.DateField()
     description = models.TextField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
