@@ -38,7 +38,7 @@ class Author(models.Model):
 
 class Book(models.Model):
     type_id = models.ForeignKey(TypeBook, on_delete=models.PROTECT)
-    file_id = models.ForeignKey(File, on_delete=models.PROTECT)
+    file_id = models.ForeignKey(File, on_delete=models.PROTECT, blank=False)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, null=False)
     image = models.ImageField(null=True)
