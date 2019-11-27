@@ -21,7 +21,7 @@ class TypeBook(models.Model):
 
 class File(models.Model):
     name = models.CharField(max_length=100, null=False)
-    file = models.FileField(null=False, upload_to='files')
+    file = models.BinaryField(null=True)
     type = models.CharField(max_length=15)
 
     def __str__(self):
@@ -41,7 +41,7 @@ class Book(models.Model):
     file_id = models.OneToOneField(File, on_delete=models.PROTECT, blank=False)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, null=False)
-    image = models.ImageField(null=True, upload_to='images')
+    image = models.BinaryField(null=True)
     year = models.DateField()
     description = models.TextField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
