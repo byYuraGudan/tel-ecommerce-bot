@@ -2,7 +2,7 @@ from telegram import *
 
 
 def main_keyboard():
-    keyboards = ['Новинки 🆘🆕', 'Топ книжок ‼️🔥', 'Каталог 📚', 'Корзина 🛒']
+    keyboards = ['Каталог 📚'] #['Новинки 🆘🆕', 'Топ книжок ‼️🔥', 'Каталог 📚', 'Корзина 🛒']
     return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
 
 
