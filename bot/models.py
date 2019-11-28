@@ -51,6 +51,11 @@ class Book(models.Model):
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
 
+    def show_details(self):
+        details = "Назва книжки: {}\nКаталог: {}\nАвтор: {}\nРік видання:{} Ціна: {}".format(
+            self.name, self.type_id.name, self.author_id.full_name, self.year, self.price)
+        return details
+
 
 class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)

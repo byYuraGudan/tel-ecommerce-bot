@@ -75,11 +75,12 @@ class TypeBookConversation(BaseConversationHandler):
     def book_info(self, bot, update):
         query = update.callback_query
         data = json.loads(query.data)
-        book = bot_models.Book.objects.filter(id=data).values()
+        book = bot_models.Book.objects.get(id=data)
         keyboards_markup = [
             InlineKeyboardButton('Преглянуту інформацію', callback_data='show_data'),
             InlineKeyboardButton('Додати до корзини', callback_data='add_basket'),
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
-        query.edit_message_text(text="Інформація про книжку: \n {}".format(dict(book)), reply_markup=reply_markup)
+        query.edit_message_text(text="Інформація про книжку: \n{}".format(book.show_details()),
+                                reply_markup=reply_markup)
         return ConversationHandler.END
