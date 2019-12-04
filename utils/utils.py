@@ -14,6 +14,7 @@ def inheritors(class_):
                 parents.append(child)
     return subclasses
 
+
 def send_action(action):
     """Sends `action` while processing func command."""
 
@@ -26,6 +27,17 @@ def send_action(action):
         return command_func
 
     return decorator
+
+
+def set_callback_data(key, data):
+    return ";".join([key, data])
+
+
+def get_callback_data(data):
+    split_data = data.split(';')
+    key = split_data[0]
+    data_info = split_data[1:]
+    return data_info
 
 
 send_typing_action = send_action(ChatAction.TYPING)

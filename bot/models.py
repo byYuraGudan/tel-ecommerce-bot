@@ -2,13 +2,24 @@ from django.db import models
 
 
 class TelegramUser(models.Model):
+    id = models.IntegerField(primary_key=True, unique=True, null=False)
     full_name = models.CharField(max_length=100)
+    username = models.CharField(max_length=50)
     datetime = models.DateTimeField(auto_now=True)
     state = models.CharField(max_length=100)
     blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.full_name)
+
+    @classmethod
+    def get_user(cls, user):
+        try:
+            user = TelegramUser.objects.get(id=user.id)
+        except TelegramUser.DoesNotExist:
+            user = TelegramUser.objects.create(id=user.id, full_name='{} {}'.format(user.first_name, user.last_name),
+                                               username=user.username)
+        return user
 
 
 class TypeBook(models.Model):
@@ -56,15 +67,48 @@ class Book(models.Model):
             self.name, self.type_id.name, self.author_id.full_name, self.year, self.price)
         return details
 
+    def check_book_in_basket(self, user):
+        check_book = ListBasket.objects.filter(book_id=self, basket_id__telegram_user_id=user)
+        if check_book.exists():
+            check_book = ListBasket.objects.get(book_id=self, basket_id__telegram_user_id=user)
+            if check_book.basket_id.is_active:
+                return False
+            return True
+        return None
+
 
 class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)
     telegram_user_id = models.ForeignKey(TelegramUser, on_delete=models.PROTECT)
-    tolal_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.telegram_user_id)
+
+    @classmethod
+    def get_basket_user(cls, user):
+        basket = Basket.objects.filter(telegram_user_id=user, is_active=True)
+        if basket.exists():
+            return Basket.objects.get(telegram_user_id=user, is_active=True)
+        return Basket.objects.create(telegram_user_id=user, is_active=True)
+
+    @classmethod
+    def add_item_basket(cls, basket, book):
+        if ListBasket.objects.filter(basket_id=basket, book_id=book).exists():
+            return True
+        ListBasket.objects.create(basket_id=basket, book_id=book, price=book.price)
+        basket.total_price += book.price
+        basket.save()
+
+    @classmethod
+    def delete_item_basket(cls, basket, book):
+        if not ListBasket.objects.filter(basket_id=basket, book_id=book).exists():
+            return True
+        item = ListBasket.objects.get(basket_id=basket, book_id=book)
+        basket.total_price -= item.price
+        basket.save()
+        item.delete()
 
 
 class ListBasket(models.Model):

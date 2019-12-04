@@ -3,7 +3,7 @@ import logging
 from django_telegrambot.apps import DjangoTelegramBot
 from telegram.ext import PicklePersistence
 
-from bot.handlers import all_command_handlers, all_message_handlers, all_conversation_handlers
+from bot.handlers import all_command_handlers, all_message_handlers, all_conversation_handlers, all_callback_query_handlers
 from bot.handlers import errors as error_handlers
 from bot.handlers.messages import unknown_message
 
@@ -21,6 +21,6 @@ def main():
     # persistence = PicklePersistence('persistence.pickle')
     dp = DjangoTelegramBot.dispatcher
     # dp.persistence = persistence
-    init_handler(dp, all_command_handlers, all_conversation_handlers, all_message_handlers)
+    init_handler(dp, all_command_handlers, all_message_handlers, all_callback_query_handlers)
     dp.add_handler(unknown_message)
     dp.add_error_handler(error_handlers.error)
