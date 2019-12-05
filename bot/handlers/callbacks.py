@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from telegram import *
 from telegram.ext import *
 
@@ -18,13 +19,15 @@ class BaseCallbackQueryHandler(CallbackQueryHandler):
         raise NotImplementedError
 
     @classmethod
-    def set_callback_data(cls, data):
-        callback_data = [cls.KEY, str(data)]
-        return ";".join(callback_data)
+    def set_callback_data(cls, **kwargs):
+        data = [cls.KEY]
+        data.extend(list('{}={}'.format(key, value) for key, value in kwargs.items()))
+        return ";".join(data)
 
     @staticmethod
     def get_callback_data(data):
-        return data.split(';')[1:]
+        data = data.split(';')[1:]
+        return {key: value for key, value in [item.split('=') for item in data]}
 
 
 class CatalogsCallback(BaseCallbackQueryHandler):
@@ -33,15 +36,23 @@ class CatalogsCallback(BaseCallbackQueryHandler):
     def callback(self, bot, update):
         query = update.callback_query
         data = self.get_callback_data(query.data)
-        books = bot_models.Book.objects.filter(type_id__id=data[0]).values('id', 'name')
-        keyboards_markup = [
-            InlineKeyboardButton(
-                book['name'], callback_data=BookInfoCallback.set_callback_data(book['id'])
-            ) for book in books
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
-        query.edit_message_text(text="Виберіть цікаву вам книжки.", reply_markup=reply_markup)
+        page = int(data.get('page', 1))
+        books_list = list(bot_models.Book.objects.filter(type_id__id=data.get('id')).values('id', 'name'))
+        books_paginator = Paginator(books_list, 5)
+        books = books_paginator.get_page(page).object_list
+        reply_markup = self.get_reply_markup(data, books, books_paginator, page)
+        query.edit_message_text(text="Виберіть, які книжки вам цікаві.", reply_markup=reply_markup)
         return True
+
+    def get_reply_markup(self, data, books, paginator, page):
+        keyboards_markup = keyboards.build_menu([
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in books
+        ], cols=1)
+        paginator_data = {'id': data['id']}
+        keyboards_markup.append(keyboards.build_paginator(paginator, page, CatalogsCallback, paginator_data))
+        return InlineKeyboardMarkup(keyboards_markup, resize_keyboard=True)
 
 
 class BookInfoCallback(BaseCallbackQueryHandler):
@@ -51,11 +62,11 @@ class BookInfoCallback(BaseCallbackQueryHandler):
         query = update.callback_query
         user = bot_models.TelegramUser.get_user(query.from_user)
         data = self.get_callback_data(query.data)
-        book = bot_models.Book.objects.get(id=data[0])
+        book = bot_models.Book.objects.get(id=data.get('id'))
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
             InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
-            InlineKeyboardButton('Преглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
             button,
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
@@ -72,12 +83,12 @@ class BasketAddItem(BaseCallbackQueryHandler):
         user = bot_models.TelegramUser.get_user(query.from_user)
         data = self.get_callback_data(query.data)
         basket = bot_models.Basket.get_basket_user(user)
-        book = bot_models.Book.objects.get(id=data[0])
+        book = bot_models.Book.objects.get(id=data.get('id'))
         basket.add_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
             InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
-            InlineKeyboardButton('Преглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
             button,
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
@@ -94,7 +105,7 @@ class BasketRemoveItem(BaseCallbackQueryHandler):
         user = bot_models.TelegramUser.get_user(query.from_user)
         data = self.get_callback_data(query.data)
         basket = bot_models.Basket.get_basket_user(user)
-        book = bot_models.Book.objects.get(id=data[0])
+        book = bot_models.Book.objects.get(id=data.get('id'))
         basket.delete_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [

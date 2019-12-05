@@ -26,7 +26,7 @@ class CatalogsMessage(BaseMessageHandler):
             update.effective_message.reply_text('Нажаль немає каталогів', reply_markup=keyboards.main_keyboard())
         keyboards_markup = [
             InlineKeyboardButton(
-                catalog['name'], callback_data=CatalogsCallback.set_callback_data(catalog['id'])
+                catalog['name'], callback_data=CatalogsCallback.set_callback_data(id=catalog['id'])
             ) for catalog in catalogs.values('id', 'name')]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
         update.effective_message.reply_text('Виберіть цікавий вам каталог.', reply_markup=reply_markup)
@@ -45,12 +45,12 @@ class BasketMessage(BaseMessageHandler):
                                                 reply_markup=keyboards.main_keyboard())
             return False
         keyboards_markup = []
-        text = 'Ваша корзина ({} грн.): \n'.format(list_basket[0].basket_id.total_price)
+        text = 'Ваша корзина (сума - {} грн.): \n'.format(list_basket[0].basket_id.total_price)
         for index, item in enumerate(list_basket):
-            text += '{}. {} - {}\n'.format(index + 1, item.book_id.name, item.price)
+            text += '{}. {} - {} грн.\n'.format(index + 1, item.book_id.name, item.price)
             keyboards_markup.append(
                 InlineKeyboardButton(
-                    item.book_id.name, callback_data=BookInfoCallback.set_callback_data(item.book_id.id)
+                    item.book_id.name, callback_data=BookInfoCallback.set_callback_data(id=item.book_id.id)
                 )
             )
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
