@@ -110,6 +110,9 @@ class Basket(models.Model):
         basket.save()
         item.delete()
 
+    def clear_basket(self):
+        return ListBasket.objects.filter(basket_id=self.id).delete()
+
 
 class ListBasket(models.Model):
     basket_id = models.ForeignKey(Basket, on_delete=models.PROTECT)
