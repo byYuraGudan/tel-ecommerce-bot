@@ -53,7 +53,9 @@ class BasketMessage(BaseMessageHandler):
                     item.book_id.name, callback_data=BookInfoCallback.set_callback_data(id=item.book_id.id)
                 )
             )
-        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        keyboards_markup = keyboards.build_menu(keyboards_markup, cols=1)
+        keyboards_markup.append(keyboards.basket_button(user))
+        reply_markup = InlineKeyboardMarkup(keyboards_markup)
         update.effective_message.reply_text(text, reply_markup=reply_markup)
         return True
 

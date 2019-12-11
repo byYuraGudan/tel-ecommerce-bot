@@ -75,7 +75,7 @@ class BookInfoCallback(BaseCallbackQueryHandler):
         return True
 
 
-class BasketAddItem(BaseCallbackQueryHandler):
+class BasketAddItemCallback(BaseCallbackQueryHandler):
     KEY = 'basket-add'
 
     def callback(self, bot, update):
@@ -97,8 +97,30 @@ class BasketAddItem(BaseCallbackQueryHandler):
         return True
 
 
-class BasketRemoveItem(BaseCallbackQueryHandler):
+class BasketRemoveItemCallback(BaseCallbackQueryHandler):
     KEY = 'basket-remove'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        data = self.get_callback_data(query.data)
+        basket = bot_models.Basket.get_basket_user(user)
+        book = bot_models.Book.objects.get(id=data.get('id'))
+        basket.delete_item_basket(basket, book)
+        button = keyboards.get_button_by_user(book, user)
+        keyboards_markup = [
+            InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
+            InlineKeyboardButton('Преглянуту інформацію', callback_data='show_data'),
+            button,
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        query.edit_message_text(text="Інформація про книжку: \n{}".format(book.show_details()),
+                                reply_markup=reply_markup)
+        return True
+
+
+class BasketClearCallback(BaseCallbackQueryHandler):
+    KEY = 'basket-clear'
 
     def callback(self, bot, update):
         query = update.callback_query

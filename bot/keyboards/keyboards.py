@@ -1,6 +1,6 @@
 from telegram import *
 
-from bot.handlers.callbacks import BasketAddItem, BasketRemoveItem
+from bot.handlers import callbacks as bot_callbacks
 
 clear = ReplyKeyboardRemove()
 
@@ -45,8 +45,18 @@ def get_button_by_user(book, user):
     book_state = book.check_book_in_basket(user)
     if book_state is None:
         return InlineKeyboardButton('Додати до корзини',
-                                    callback_data=BasketAddItem.set_callback_data(id=book.id))
+                                    callback_data=bot_callbacks.BasketAddItemCallback.set_callback_data(id=book.id))
     if not book_state:
         return InlineKeyboardButton('Видалити з корзини',
-                                    callback_data=BasketRemoveItem.set_callback_data(id=book.id))
+                                    callback_data=bot_callbacks.BasketRemoveItemCallback.set_callback_data(id=book.id))
     return InlineKeyboardButton('Завантажити книгу', callback_data='download_book')
+
+
+def basket_button(user):
+    keyboards = [
+        InlineKeyboardButton('Оплатити', callback_data='buy'),
+        InlineKeyboardButton('Очистити корзину',
+                             callback_data=bot_callbacks.BasketClearCallback.set_callback_data(user_id=user.id))
+    ]
+    return keyboards
+
