@@ -66,14 +66,38 @@ class BookInfoCallback(BaseCallbackQueryHandler):
         book = bot_models.Book.objects.get(id=data.get('id'))
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
             InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
+                                 callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
         query.edit_message_text(text="Інформація про книжку: \n{}".format(book.show_details()),
                                 reply_markup=reply_markup)
         return True
+
+
+class BookLikeCallback(BaseCallbackQueryHandler):
+    KEY = 'book-like'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        data = self.get_callback_data(query.data)
+        book = bot_models.Book.objects.get(id=data.get('id'))
+        book.set_likes(user)
+        button = keyboards.get_button_by_user(book, user)
+        keyboards_markup = [
+            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
+                                 callback_data=self.set_callback_data(id=book.id)),
+            button,
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        query.edit_message_text(text="Інформація про книжку: \n{}".format(book.show_details()),
+                                reply_markup=reply_markup)
+        return True
+
 
 
 class BasketAddItemCallback(BaseCallbackQueryHandler):

@@ -76,6 +76,15 @@ class Book(models.Model):
             return True
         return None
 
+    def get_likes(self):
+        return Like.objects.filter(book_id=self).count()
+
+    def set_likes(self, user):
+        book_likes = Like.objects.filter(book_id=self, telegram_user_id=user)
+        if book_likes.exists():
+            return book_likes.delete()
+        return Like.objects.create(book_id=self, telegram_user_id=user)
+
 
 class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)
