@@ -18,7 +18,7 @@ class TelegramUser(models.Model):
             user = TelegramUser.objects.get(id=user.id)
         except TelegramUser.DoesNotExist:
             user = TelegramUser.objects.create(id=user.id, full_name='{} {}'.format(user.first_name, user.last_name),
-                                               username=user.username)
+                                               username=user.username or ' ')
         return user
 
 
