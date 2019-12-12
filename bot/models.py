@@ -111,7 +111,19 @@ class Basket(models.Model):
         item.delete()
 
     def clear_basket(self):
+        self.total_price = 0
+        self.save()
         return ListBasket.objects.filter(basket_id=self.id).delete()
+
+    def get_list_basket(self):
+        return ListBasket.objects.filter(basket_id=self.id)
+
+    @classmethod
+    def get_basket_by_id(cls, basket_id):
+        basket = Basket.objects.filter(id=basket_id)
+        if basket.exists():
+            return Basket.objects.get(id=basket_id)
+        return None
 
 
 class ListBasket(models.Model):

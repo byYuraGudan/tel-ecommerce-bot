@@ -3,6 +3,7 @@ from telegram import *
 from bot.handlers import callbacks as bot_callbacks
 
 clear = ReplyKeyboardRemove()
+clear_inline = InlineKeyboardMarkup([])
 
 
 def main_keyboard():
@@ -52,9 +53,10 @@ def get_button_by_user(book, user):
     return InlineKeyboardButton('Завантажити книгу', callback_data='download_book')
 
 
-def basket_button(user):
+def basket_button(user, basket):
     keyboards = [
-        InlineKeyboardButton('Оплатити', callback_data='buy'),
+        InlineKeyboardButton('Оплатити',
+                             callback_data=bot_callbacks.BuyCallback.set_callback_data(basket_id=basket.id)),
         InlineKeyboardButton('Очистити корзину',
                              callback_data=bot_callbacks.BasketClearCallback.set_callback_data(user_id=user.id))
     ]

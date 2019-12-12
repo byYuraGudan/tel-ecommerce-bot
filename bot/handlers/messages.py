@@ -1,7 +1,8 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
-from bot.handlers.callbacks import CatalogsCallback, BookInfoCallback
+
 from bot import models as bot_models
+from bot.handlers.callbacks import CatalogsCallback, BookInfoCallback
 from bot.keyboards import keyboards
 
 
@@ -39,7 +40,8 @@ class BasketMessage(BaseMessageHandler):
 
     def callback(self, bot, update):
         user = bot_models.TelegramUser.get_user(update.effective_message.from_user)
-        list_basket = bot_models.ListBasket.objects.filter(basket_id__telegram_user_id=user.id, basket_id__is_active=True)
+        basket = bot_models.Basket.get_basket_user(user)
+        list_basket = basket.get_list_basket()
         if not list_basket.exists():
             update.effective_message.reply_text('Корзина пуста, додайте книжку в корзинку',
                                                 reply_markup=keyboards.main_keyboard())
@@ -54,9 +56,19 @@ class BasketMessage(BaseMessageHandler):
                 )
             )
         keyboards_markup = keyboards.build_menu(keyboards_markup, cols=1)
-        keyboards_markup.append(keyboards.basket_button(user))
+        keyboards_markup.append(keyboards.basket_button(user, basket))
         reply_markup = InlineKeyboardMarkup(keyboards_markup)
         update.effective_message.reply_text(text, reply_markup=reply_markup)
+        return True
+
+
+class SuccesfulPaymentMessage(BaseMessageHandler):
+    COMMAND = Filters.successful_payment
+    STATE = 'successful_payment'
+
+    def callback(self, bot, update):
+
+        update.message.reply_text("Thank you for your payment!")
         return True
 
 

@@ -3,6 +3,7 @@ from telegram import *
 from telegram.ext import *
 
 from bot import models as bot_models
+from bot.handlers.payments import paypal
 from bot.keyboards import keyboards
 
 
@@ -87,7 +88,6 @@ class BasketAddItemCallback(BaseCallbackQueryHandler):
         basket.add_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
             InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
             button,
         ]
@@ -127,5 +127,28 @@ class BasketClearCallback(BaseCallbackQueryHandler):
         user = bot_models.TelegramUser.get_user(query.from_user)
         basket = bot_models.Basket.get_basket_user(user)
         basket.clear_basket()
-        query.edit_message_text(text="Корзина очищена.", reply_markup=InlineKeyboardMarkup([]))
+        query.edit_message_text(text="Корзина очищена.", reply_markup=keyboards.clear_inline)
+        return True
+
+
+class BuyCallback(BaseCallbackQueryHandler):
+    KEY = 'buy'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        data = self.get_callback_data(query.data)
+        basket = bot_models.Basket.get_basket_by_id(data.get('basket_id', 0))
+
+        title = "Оплата за книги"
+        description = "Оплата за книги на суму {}, для отримання доступу до книг.".format(basket.total_price)
+
+        provider_data = {'user_id': user.id, 'basket_id': basket.id}
+        price = int(basket.total_price * 100)
+        prices = [LabeledPrice("Ціна оплати", price)]
+        query.edit_message_text("Очікується оплата на суму {} грн.".format(basket.total_price),
+                                reply_markup=keyboards.clear_inline)
+        bot.send_invoice(query.message.chat_id, title, description, paypal.payload, paypal.provider_token,
+                         paypal.start_parameter, paypal.currency, prices, provider_data=provider_data)
+
         return True
