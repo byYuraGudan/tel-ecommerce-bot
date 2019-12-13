@@ -85,6 +85,20 @@ class Book(models.Model):
             return book_likes.delete()
         return Like.objects.create(book_id=self, telegram_user_id=user)
 
+    @classmethod
+    def get_top_books(cls, limit=10):
+        return Book.objects.exclude(hidden=True).annotate(likes=models.Count('like')).order_by('-likes')[:limit]
+
+    @classmethod
+    def get_top_purchase_books(cls, limit=10):
+        return Book.objects.exclude(hidden=True).annotate(
+            cnt=models.Count('listbasket', filter=models.Q(listbasket__basket_id__purchase__is_sold=True))
+        ).filter(cnt__gt=0)[:limit]
+
+    @classmethod
+    def get_new_books(cls, limit=10):
+        return Book.objects.exclude(hidden=True).order_by('-date')[:limit]
+
 
 class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)

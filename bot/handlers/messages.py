@@ -25,12 +25,74 @@ class CatalogsMessage(BaseMessageHandler):
         catalogs = bot_models.TypeBook.objects.exclude(hidden=True)
         if not catalogs.exists():
             update.effective_message.reply_text('Нажаль немає каталогів', reply_markup=keyboards.main_keyboard())
+            return False
         keyboards_markup = [
             InlineKeyboardButton(
                 catalog['name'], callback_data=CatalogsCallback.set_callback_data(id=catalog['id'])
-            ) for catalog in catalogs.values('id', 'name')]
+            ) for catalog in catalogs.values('id', 'name')
+        ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
         update.effective_message.reply_text('Виберіть цікавий вам каталог.', reply_markup=reply_markup)
+        return True
+
+
+class TopBooksMessage(BaseMessageHandler):
+    COMMAND = Filters.regex('^Топ-10 книг+')
+    STATE = 'top-10-books'
+
+    def callback(self, bot, update):
+        top_books = bot_models.Book.get_top_books(limit=10)
+        if not top_books.exists():
+            update.effective_message.reply_text('Нажаль немає популярних книг',
+                                                reply_markup=keyboards.main_keyboard())
+            return False
+        keyboards_markup = [
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in top_books.values('id', 'name')
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        update.effective_message.reply_text('Виберіть цікаву вам книжку.', reply_markup=reply_markup)
+        return True
+
+
+class TopPurchaseBooksMessage(BaseMessageHandler):
+    COMMAND = Filters.regex('^Топ-10 продажів+')
+    STATE = 'top-10-purchase-books'
+
+    def callback(self, bot, update):
+        top_books = bot_models.Book.get_top_purchase_books(limit=10)
+        if not top_books.exists():
+            update.effective_message.reply_text('Нажаль немає популярних проданих книг',
+                                                reply_markup=keyboards.main_keyboard())
+            return False
+        keyboards_markup = [
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in top_books.values('id', 'name')
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        update.effective_message.reply_text('Виберіть цікаву вам книжку.', reply_markup=reply_markup)
+        return True
+
+
+class NewBooksMessage(BaseMessageHandler):
+    COMMAND = Filters.regex('^Новинки+')
+    STATE = 'new-books'
+
+    def callback(self, bot, update):
+        top_books = bot_models.Book.get_new_books(limit=6)
+        if not top_books.exists():
+            update.effective_message.reply_text('Нажаль немає нових книг.',
+                                                reply_markup=keyboards.main_keyboard())
+            return False
+        keyboards_markup = [
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in top_books.values('id', 'name')
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        update.effective_message.reply_text('Виберіть цікаву вам книжку.', reply_markup=reply_markup)
         return True
 
 

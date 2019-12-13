@@ -169,7 +169,7 @@ class BuyCallback(BaseCallbackQueryHandler):
 
         provider_data = {'user_id': user.id, 'basket_id': basket.id}
         price = int(basket.total_price * 100)
-        prices = [LabeledPrice("Ціна оплати", price)]
+        prices = [LabeledPrice("Ціна оплати", price if price else 100)]
         query.edit_message_text("Очікується оплата на суму {} грн.".format(basket.total_price),
                                 reply_markup=keyboards.clear_inline)
         bot.send_invoice(query.message.chat_id, title, description, paypal.payload, paypal.provider_token,

@@ -7,8 +7,8 @@ clear_inline = InlineKeyboardMarkup([])
 
 
 def main_keyboard():
-    keyboards = ['Каталог 📚', 'Корзина 🛒']  # ['Новинки 🆘🆕', 'Топ книжок ‼️🔥', 'Каталог 📚', 'Корзина 🛒']
-    return ReplyKeyboardMarkup(build_menu(keyboards), resize_keyboard=True)
+    keyboards = [['Топ-10 книг🔟‼️', 'Топ-10 продажів 🔟📈'], ['Новинки🔥⁉️', 'Каталог 📚'], ['Корзина 🛒']]
+    return ReplyKeyboardMarkup(keyboards, resize_keyboard=True)
 
 
 def build_menu(buttons, cols=2, header_buttons=None, footer_buttons=None):
