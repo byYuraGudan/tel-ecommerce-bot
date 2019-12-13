@@ -31,5 +31,5 @@ if settings.DEBUG:
 urlpatterns += [
     path('admin/', admin.site.urls),
     path('', include('django_telegrambot.urls')),
-    path('api/liqpay', liqpay)
+    path('api/liqpay/', liqpay)
 ]
