@@ -117,7 +117,7 @@ class UserBooksMessage(BaseMessageHandler):
 
 class BasketMessage(BaseMessageHandler):
     COMMAND = Filters.regex('^Корзина+')
-    STATE = 'catalogs'
+    STATE = 'baskets'
 
     def callback(self, bot, update):
         user = bot_models.TelegramUser.get_user(update.effective_message.from_user)

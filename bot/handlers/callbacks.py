@@ -216,3 +216,16 @@ class BuyCallback(BaseCallbackQueryHandler):
                          paypal.start_parameter, paypal.currency, prices, provider_data=provider_data)
 
         return True
+
+class TestBuyCallback(BaseCallbackQueryHandler):
+    KEY = 'test-buy'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        data = self.get_callback_data(query.data)
+        basket = bot_models.Basket.get_basket_by_id(data.get('basket_id', 0))
+        bot_models.Purchase.create_purchase(basket, 'test-01')
+        query.message.reply_text('{}, дякую за покупку тепер ви маєте доступ до книги'.format(user.username),
+                                 reply_markup=keyboards.main_keyboard())
+        return True

@@ -58,6 +58,8 @@ def basket_button(user, basket):
     keyboards = [
         InlineKeyboardButton('Оплатити',
                              callback_data=bot_callbacks.BuyCallback.set_callback_data(basket_id=basket.id)),
+        InlineKeyboardButton('Test-Оплатити',
+                             callback_data=bot_callbacks.TestBuyCallback.set_callback_data(basket_id=basket.id)),
         InlineKeyboardButton('Очистити корзину',
                              callback_data=bot_callbacks.BasketClearCallback.set_callback_data(user_id=user.id))
     ]

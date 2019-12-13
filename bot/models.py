@@ -179,3 +179,10 @@ class Purchase(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     receipt_id = models.CharField(max_length=100)
     is_sold = models.BooleanField(default=False)
+
+    @classmethod
+    def create_purchase(cls, basket, receipt):
+        basket.is_active = False
+        basket.save()
+        return Purchase.objects.create(basket_id=basket, total_price=basket.total_price,
+                                       receipt_id=receipt, is_sold=True)
