@@ -19,6 +19,8 @@ from django.urls import path, include
 
 from django.conf import settings
 
+from bot.views import liqpay
+
 urlpatterns = []
 
 
@@ -28,5 +30,6 @@ if settings.DEBUG:
 
 urlpatterns += [
     path('admin/', admin.site.urls),
-    path('', include('django_telegrambot.urls'))
+    path('', include('django_telegrambot.urls')),
+    path('api/liqpay', liqpay)
 ]
