@@ -99,6 +99,10 @@ class Book(models.Model):
     def get_new_books(cls, limit=10):
         return Book.objects.exclude(hidden=True).order_by('-date')[:limit]
 
+    @classmethod
+    def get_user_books(cls, user):
+        return Book.objects.filter(listbasket__basket_id__purchase__is_sold=True)
+
 
 class Basket(models.Model):
     datetime = models.DateTimeField(auto_now=True)

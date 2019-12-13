@@ -96,6 +96,27 @@ class NewBooksMessage(BaseMessageHandler):
         return True
 
 
+class MyBooksMessage(BaseMessageHandler):
+    COMMAND = Filters.regex('^Мої книги+')
+    STATE = 'new-books'
+
+    def callback(self, bot, update):
+        user = bot_models.TelegramUser.get_user(update.effective_message.from_user)
+        top_books = bot_models.Book.get_user_books(user)
+        if not top_books.exists():
+            update.effective_message.reply_text('Нажаль у вас немає куплених книг.',
+                                                reply_markup=keyboards.main_keyboard())
+            return False
+        keyboards_markup = [
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in top_books.values('id', 'name')
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        update.effective_message.reply_text('Виберіть книгу, яка вам цікава.', reply_markup=reply_markup)
+        return True
+
+
 class BasketMessage(BaseMessageHandler):
     COMMAND = Filters.regex('^Корзина+')
     STATE = 'catalogs'
