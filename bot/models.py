@@ -63,8 +63,8 @@ class Book(models.Model):
         return '{} - {}'.format(self.id, self.name)
 
     def show_details(self):
-        details = "Назва книжки: {}\nКаталог: {}\nАвтор: {}\nРік видання:{} Ціна: {}".format(
-            self.name, self.type_id.name, self.author_id.full_name, self.year, self.price)
+        details = "Назва книжки: {}\nКаталог: {}\nАвтор: {}\nРік видання: {}\nЦіна: {}".format(
+            self.name, self.type_id.name, self.author_id.full_name, self.year.strftime('%Y'), self.price)
         return details
 
     def check_book_in_basket(self, user):
@@ -84,6 +84,9 @@ class Book(models.Model):
         if book_likes.exists():
             return book_likes.delete()
         return Like.objects.create(book_id=self, telegram_user_id=user)
+
+    def get_file(self):
+        return File.objects.get(id=self.file_id.id)
 
     @classmethod
     def get_top_books(cls, limit=10):

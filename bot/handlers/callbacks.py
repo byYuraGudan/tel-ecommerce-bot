@@ -1,6 +1,8 @@
+from io import BytesIO
+
 from django.core.paginator import Paginator
-from telegram import *
-from telegram.ext import *
+from telegram.ext import CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 
 from bot import models as bot_models
 from bot.handlers.payments import paypal
@@ -104,10 +106,16 @@ class DownloadBookCallback(BaseCallbackQueryHandler):
 
     def callback(self, bot, update):
         query = update.callback_query
-        user = bot_models.TelegramUser.get_user(query.from_user)
         data = self.get_callback_data(query.data)
         book = bot_models.Book.objects.get(id=data.get('id'))
-        query.message.reply_text('Тут буде загрузка книги', reply_markup=keyboards.main_keyboard())
+        file = book.get_file()
+        if not file.file:
+            query.message.reply_text('Нажаль ції книги немає в базі даних.', reply_markup=keyboards.main_keyboard())
+            return False
+        byte_file = BytesIO(file.file.tobytes())
+        byte_file.name = '{}.{}'.format(file.name, file.type)
+        query.answer('Приємного читання.🤓')
+        bot.send_document(chat_id=query.message.chat.id, document=byte_file, reply_markup=keyboards.main_keyboard())
         return True
 
 
@@ -216,6 +224,7 @@ class BuyCallback(BaseCallbackQueryHandler):
                          paypal.start_parameter, paypal.currency, prices, provider_data=provider_data)
 
         return True
+
 
 class TestBuyCallback(BaseCallbackQueryHandler):
     KEY = 'test-buy'
