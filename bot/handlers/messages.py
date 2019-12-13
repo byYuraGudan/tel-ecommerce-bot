@@ -1,8 +1,9 @@
+from django.core.paginator import Paginator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import MessageHandler, Filters
 
 from bot import models as bot_models
-from bot.handlers.callbacks import CatalogsCallback, BookInfoCallback
+from bot.handlers.callbacks import CatalogsCallback, BookInfoCallback, UserBooksCallback
 from bot.keyboards import keyboards
 
 
@@ -96,23 +97,20 @@ class NewBooksMessage(BaseMessageHandler):
         return True
 
 
-class MyBooksMessage(BaseMessageHandler):
+class UserBooksMessage(BaseMessageHandler):
     COMMAND = Filters.regex('^Мої книги+')
-    STATE = 'new-books'
+    STATE = 'user-books'
 
     def callback(self, bot, update):
         user = bot_models.TelegramUser.get_user(update.effective_message.from_user)
-        top_books = bot_models.Book.get_user_books(user)
-        if not top_books.exists():
+        books_list = bot_models.Book.get_user_books(user)
+        if not books_list.exists():
             update.effective_message.reply_text('Нажаль у вас немає куплених книг.',
                                                 reply_markup=keyboards.main_keyboard())
             return False
-        keyboards_markup = [
-            InlineKeyboardButton(
-                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
-            ) for book in top_books.values('id', 'name')
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
+        books_paginator = Paginator(books_list, 5)
+        books = books_paginator.get_page(1).object_list
+        reply_markup = UserBooksCallback.get_reply_markup(books, books_paginator, page=1)
         update.effective_message.reply_text('Виберіть книгу, яка вам цікава.', reply_markup=reply_markup)
         return True
 

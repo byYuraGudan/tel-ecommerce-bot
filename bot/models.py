@@ -101,7 +101,8 @@ class Book(models.Model):
 
     @classmethod
     def get_user_books(cls, user):
-        return Book.objects.filter(listbasket__basket_id__purchase__is_sold=True)
+        return Book.objects.filter(listbasket__basket_id__purchase__is_sold=True,
+                                   listbasket__basket_id__telegram_user_id=user)
 
 
 class Basket(models.Model):

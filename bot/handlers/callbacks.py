@@ -99,6 +99,43 @@ class BookLikeCallback(BaseCallbackQueryHandler):
         return True
 
 
+class DownloadBookCallback(BaseCallbackQueryHandler):
+    KEY = 'download-book'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        data = self.get_callback_data(query.data)
+        book = bot_models.Book.objects.get(id=data.get('id'))
+        query.message.reply_text('Тут буде загрузка книги', reply_markup=keyboards.main_keyboard())
+        return True
+
+
+class UserBooksCallback(BaseCallbackQueryHandler):
+    KEY = 'user-books'
+
+    def callback(self, bot, update):
+        query = update.callback_query
+        data = self.get_callback_data(query.data)
+        user = bot_models.TelegramUser.get_user(query.from_user)
+        page = int(data.get('page', 1))
+        books_list = bot_models.Book.objects.filter(listbasket__basket_id__telegram_user_id=user)
+        books_paginator = Paginator(books_list, 5)
+        books = books_paginator.get_page(page).object_list
+        reply_markup = self.get_reply_markup(books, books_paginator, page)
+        query.edit_message_text(text="Виберіть книгу, яка вам цікава.", reply_markup=reply_markup)
+
+    @classmethod
+    def get_reply_markup(cls, books, paginator, page):
+        keyboards_markup = keyboards.build_menu([
+            InlineKeyboardButton(
+                book['name'], callback_data=BookInfoCallback.set_callback_data(id=book['id'])
+            ) for book in books.values('id', 'name')
+        ], cols=1)
+        paginator_data = {}
+        keyboards_markup.append(keyboards.build_paginator(paginator, page, UserBooksCallback, paginator_data))
+        return InlineKeyboardMarkup(keyboards_markup, resize_keyboard=True)
+
 
 class BasketAddItemCallback(BaseCallbackQueryHandler):
     KEY = 'basket-add'
@@ -113,6 +150,8 @@ class BasketAddItemCallback(BaseCallbackQueryHandler):
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
             InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
+                                 callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))
@@ -133,8 +172,9 @@ class BasketRemoveItemCallback(BaseCallbackQueryHandler):
         basket.delete_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Оплатити', callback_data='show_data', pay=True),
-            InlineKeyboardButton('Преглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
+                                 callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
         ]
         reply_markup = InlineKeyboardMarkup(keyboards.build_menu(keyboards_markup))

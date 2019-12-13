@@ -50,7 +50,8 @@ def get_button_by_user(book, user):
     if not book_state:
         return InlineKeyboardButton('Видалити з корзини',
                                     callback_data=bot_callbacks.BasketRemoveItemCallback.set_callback_data(id=book.id))
-    return InlineKeyboardButton('Завантажити книгу', callback_data='download_book')
+    return InlineKeyboardButton('Завантажити книгу',
+                                callback_data=bot_callbacks.DownloadBookCallback.set_callback_data(id=book.id))
 
 
 def basket_button(user, basket):
