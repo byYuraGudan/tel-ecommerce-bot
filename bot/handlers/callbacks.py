@@ -68,7 +68,7 @@ class BookInfoCallback(BaseCallbackQueryHandler):
         book = bot_models.Book.objects.get(id=data.get('id'))
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянути інформацію', callback_data='show_data'),
             InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
                                  callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
@@ -90,7 +90,7 @@ class BookLikeCallback(BaseCallbackQueryHandler):
         book.set_likes(user)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянути інформацію', callback_data='show_data'),
             InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
                                  callback_data=self.set_callback_data(id=book.id)),
             button,
@@ -157,7 +157,7 @@ class BasketAddItemCallback(BaseCallbackQueryHandler):
         basket.add_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянути інформацію', callback_data='show_data'),
             InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
                                  callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
@@ -180,7 +180,7 @@ class BasketRemoveItemCallback(BaseCallbackQueryHandler):
         basket.delete_item_basket(basket, book)
         button = keyboards.get_button_by_user(book, user)
         keyboards_markup = [
-            InlineKeyboardButton('Переглянуту інформацію', callback_data='show_data'),
+            InlineKeyboardButton('Переглянути інформацію', callback_data='show_data'),
             InlineKeyboardButton('❤️ {}'.format(book.get_likes()),
                                  callback_data=BookLikeCallback.set_callback_data(id=book.id)),
             button,
