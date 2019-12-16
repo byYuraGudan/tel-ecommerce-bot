@@ -1,10 +1,10 @@
-from django.http import HttpResponse
 from django.shortcuts import render
-import logging
 
-logger = logging.getLogger(__name__)
-# Create your views here.
+from bot.models import Book
 
-def liqpay(request):
-    logger.info(request, request.data)
-    return HttpResponse('')
+
+def detail_book(request, book_id):
+    fields = ['id', 'type_id__name', 'author_id__full_name', 'name', 'year', 'description', 'price', 'date',
+              'language', 'page_count', 'publishing', 'image']
+    book = Book.objects.filter(id=book_id).values(*fields).first()
+    return render(request, 'book/detail.html', context={'book_detail': book})

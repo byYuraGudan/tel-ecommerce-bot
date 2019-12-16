@@ -2,6 +2,8 @@ from functools import wraps
 
 from telegram import ChatAction
 
+from eccomerceBot.settings import ALLOWED_HOSTS
+
 
 def inheritors(class_):
     subclasses = set()
@@ -38,6 +40,10 @@ def get_callback_data(data):
     key = split_data[0]
     data_info = split_data[1:]
     return data_info
+
+def generate_book_link(id):
+    host = ALLOWED_HOSTS[0]
+    return '{}/bot/book/detail/{}'.format(host, id)
 
 
 send_typing_action = send_action(ChatAction.TYPING)

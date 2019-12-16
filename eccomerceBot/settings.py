@@ -25,7 +25,7 @@ SECRET_KEY = 'k&sfk8#2*6r5qh225y2rqf(w7)d7a5s&p&vkka#*mb1f8i-mnk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['telegram-sales-bot.herokuapp.com']
 
 
 # Application definition

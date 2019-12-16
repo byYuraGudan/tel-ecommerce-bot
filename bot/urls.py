@@ -13,21 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import static
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 
-from django.conf import settings
+from bot.views import detail_book
 
-urlpatterns = []
-
-
-if settings.DEBUG:
-    urlpatterns += static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static.static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-urlpatterns += [
-    path('admin/', admin.site.urls),
-    path('', include('django_telegrambot.urls')),
-    path('bot/', include('bot.urls'))
+urlpatterns = [
+    path('book/detail/<int:book_id>', detail_book, name='book-detail'),
 ]

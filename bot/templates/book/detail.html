@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-dark mt-5 mb-5">
+    {% if book_detail %}
+
+    <div class="container main-detail">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1><strong>{{ book_detail.name }}</strong></h1>
+                    <h6 class="ml-1">Код товару: {{ book_detail.id }} </h6>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-5 d-flex justify-content-center">
+
+                    <img class="d-block" width="300"
+                         src={{ book_detail.image }}>
+                </div>
+                <div class="col-md-7">
+                    <div class="jumbotron d-flex flex-column h-100">
+                        <h4><strong>Про книгу</strong></h4>
+                        <p class="lead mt-2">{{ book_detail.description }}</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-5">
+        </div>
+
+        <div class="row d-flex justify-content-center ">
+
+            <h3 class="text-secondary mt-auto p-2">Усі характеристики</h3>
+        </div>
+
+        <div class="mt-auto" id="collapseExample">
+            <div class="card card-body border-0">
+                <table class="table table-bordered m-auto">
+
+                    <tbody>
+                    <tr>
+                        <td>Автор:</td>
+                        <td class="text-right">{{ book_detail.author_id__full_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Видавництво:</td>
+                        <td class="text-right">{{ book_detail.publishing }}</td>
+                    </tr>
+                    <tr>
+                        <td>Мова:</td>
+                        <td class="text-right">{{ book_detail.language }}</td>
+                    </tr>
+                    <tr>
+                        <td>Рік видання:</td>
+                        <td class="text-right">{{ book_detail.year }}</td>
+                    </tr>
+                    <tr>
+                        <td>Кількість сторінок:</td>
+                        <td class="text-right">{{ book_detail.page_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Ціна:</td>
+                        <td class="text-right">{{ book_detail.price }} грн.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+        {% else %}
+        <h1 style="position: center">Not found book id</h1>
+        {% endif %}
+{% endblock %}

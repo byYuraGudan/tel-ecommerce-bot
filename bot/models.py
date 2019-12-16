@@ -52,12 +52,15 @@ class Book(models.Model):
     file_id = models.OneToOneField(File, on_delete=models.PROTECT, blank=False)
     author_id = models.ForeignKey(Author, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, null=False)
-    image = models.BinaryField(null=True)
+    image = models.TextField(null=True)
     year = models.DateField()
     description = models.TextField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     hidden = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now=True)
+    language = models.CharField(max_length=255, null=True)
+    page_count = models.PositiveIntegerField(null=False, default=0)
+    publishing = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return '{} - {}'.format(self.id, self.name)
